@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Vali Admin - Free Bootstrap 4 Admin Template</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- bootstrap CSS-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/bootstrap/css/bootstrap.min.css" /><!-- Main CSS-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/main.css" /><!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="__STATIC__/layui/css/layui.css"  media="all">
+</head>
+<body class="app sidebar-mini rtl">
+  <!-- Navbar-->
+{include file="public/header"}
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+{include file="public/sidebar"}
+  <main class="app-content">
+    <div class="app-title">
+      <div>
+        <h1><i class="fa fa-folder"></i> 文件管理</h1>
+      </div>
+      <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item">
+          <a href="#">分享提取</a>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tile">
+          <div class="tile-title">
+            分享提取
+          </div>
+          <div class="tile-body">
+            <div class="layui-form-item">
+              <label class="layui-form-label">path</label>
+              <div class="layui-input-block">
+                <input type="text" id="path" required lay-verify="required" placeholder="请输入path" autocomplete="off" class="layui-input" value="/">
+              </div>
+            </div>
+            <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="text/html" id="toolBar">
+    <div class="layui-btn-container">
+      <button class="layui-btn layui-btn-sm" lay-event="pathBack">后退</button>
+      <button class="layui-btn layui-btn-sm" lay-event="Refresh">刷新</button>
+    </div>
+  </script>
+  <script type="text/html" id="lineToolBar">
+    <a class="layui-btn layui-btn-warning layui-btn-xs" lay-event="download">下载</a>
+  </script>
+  <!-- Essential javascripts for application to work-->
+  <script src="__STATIC__/APP/js/jquery-3.2.1.min.js"></script> 
+  <script src="__STATIC__/APP/js/popper.min.js"></script> 
+  <script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script> 
+  <script src="__STATIC__/APP/js/main.js"></script> <!-- The javascript plugin to display page loading on top-->
+   
+  <script src="__STATIC__/APP/js/plugins/pace.min.js"></script> <!-- Page specific javascripts-->
+  <!-- Layui plugin-->
+  <script src="__STATIC__/layui/layui.js"></script>
+
+  <script type="text/javascript">
+    layui.use('table', function() {
+      var table = layui.table;
+      table.render({
+        elem: "#fileList",
+        url: "{:url('index/share/fileList')}",
+        response: {
+          statusName: 'status', //规定数据状态的字段名称，默认：code
+          statusCode: 1, //规定成功的状态码，默认：0
+          msgName: 'msg', //规定状态信息的字段名称，默认：msg
+          countName: 'count', //规定数据总数的字段名称，默认：count
+          dataName: 'data', //规定数据列表的字段名称，默认：data
+        },
+        where: {path: $('#path').val(), url: "{$url}"},
+        toolbar: "#toolBar",
+        defaultToolbar: [],
+        title: "文件管理",
+        cols: [
+          [
+            {type: "checkbox", fixed: "left", field: "id"},
+            {field: "fileName", title: "文件名", fixed: "left", sort: true, templet: function(rst) {
+              if (rst.type == 1)
+                return "<i class=\"fa fa-file\" aria-hidden=\"true\"></i> " + rst.fileName;
+              else
+                return "<i class=\"fa fa-folder-open-o\" aria-hidden=\"true\"></i> " + rst.fileName;
+            }},
+            {field: "crateTime", title: "创建时间", sort: true},
+            {field: "size", title: "大小", sort: true},
+            {fixed: "right", title: "操作", toolbar: "#lineToolBar"}
+          ]
+        ],
+        height: 'full-350',
+        page: true,
+        id: "idFileList"
+      });
+
+      table.on('toolbar(fileList)', function(obj){
+        var checkStatus = table.checkStatus(obj.config.id);
+        switch(obj.event){
+          case 'pathBack':
+            var path = $('#path').val();
+            path = path.substr(0, path.lastIndexOf('/'));
+            if (path.length == 0)
+              path = "/";
+            $('#path').val(path);
+            table.reload("idFileList", { where: {path: $('#path').val()} } );
+          break;
+          case 'Refresh':
+            table.reload("idFileList", {});
+          break;
+        };
+      });
+
+      table.on('tool(fileList)', function(obj) {
+        var data = obj.data;
+        console.log(data);
+        switch(obj.event) {
+          case 'download':
+            if (data.type == '0') {
+              layer.msg("文件夹不允许下载！");
+            } else {
+              window.open("{:url('index/file/down', ['id' => 'fileId'])}".replace("fileId", data.id));
+            }
+          break;
+        }
+      });
+
+      table.on('rowDouble(fileList)', function(obj){
+        if (obj.data.type == 0) {
+          if ($('#path').val() == '/')
+            $('#path').val($('#path').val()+obj.data.fileName);
+          else
+            $('#path').val($('#path').val()+"/"+obj.data.fileName);
+          table.reload("idFileList", { where: {path: $('#path').val()} } );
+        }
+      });
+
+
+
+    });
+
+  </script>
+
+</body>
+</html>

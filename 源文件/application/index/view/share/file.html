@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>文件上传</title>
+  <link rel="stylesheet" type="text/css" href="__STATIC__/layui/css/layui.css">
+</head>
+<body>
+
+  <form class="layui-form layui-form-pane" action="">
+    <div class="layui-form-item" pane="">
+      <label class="layui-form-label">分享方式</label>
+      <div class="layui-input-block">
+        <input type="radio" name="type" value="0" title="公开分享" checked="">
+        <input type="radio" name="type" value="1" title="密码分享">
+      </div>
+    </div>
+    <div class="layui-form-item" pane="">
+      <label class="layui-form-label">过期时间</label>
+      <div class="layui-input-block">
+        <input type="radio" name="time" value="1" title="1天" checked="">
+        <input type="radio" name="time" value="7" title="7天">
+        <input type="radio" name="time" value="0" title="永久">
+      </div>
+    </div>
+    <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit="" lay-filter="create">创建连接</button>
+    </div>
+  </div>
+  </form>
+
+  <script src="__STATIC__/APP/js/jquery-3.2.1.min.js"></script> 
+  <script src="__STATIC__/layui/layui.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    layui.use(['form', 'element'], function() {
+      var form = layui.form;
+      var element = layui.element;
+      form.on('submit(create)', function(data){
+        var data = data.field;
+        data['id'] = '{$fileId}';
+        $.ajax({
+          url: "{:url('index/share/create')}",
+          type: "POST",
+          data: data,
+          dataType: "JSON",
+          success: function(rst) {
+            if (rst.status) {
+              var context = "创建分享链接成功！\n" + rst.msg.url;
+              if ( rst.msg.password ) {
+                context += "\n提取密码：\n" + rst.msg.password;
+              }
+              layer.prompt({title: '提示', formType: 2, value: context},
+              function(text, index){
+                layer.close(index);
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+              },
+              function(text, index){
+                layer.close(index);
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+              });
+            } else {
+              layer.alert("创建分享链接失败!" + rst.msg, {
+                title: '提示',
+                icon: 5,
+              });
+
+            }
+          }
+        });
+        return false;
+      });
+
+    });
+  </script>
+</body>
+</html>

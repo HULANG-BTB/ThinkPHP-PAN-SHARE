@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Vali Admin - Free Bootstrap 4 Admin Template</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Main CSS-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/main.css" /><!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/font-awesome.min.css" />
+</head>
+<body class="app sidebar-mini rtl">
+  <!-- Navbar-->
+{include file="public/header"}
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+{include file="public/sidebar"}
+  <main class="app-content">
+    <div class="app-title">
+      <div>
+        <h1><i class="fa fa-user"></i> 网站配置</h1>
+      </div>
+      <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item">网站管理</li>
+        <li class="breadcrumb-item">
+          <a href="#">网站配置</a>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tile">
+          <h3 class="tile-title">腾讯云存储接口</h3>
+          <div class="tile-body">
+            <form id="qcloudcos">
+              <div class="form-group">
+                <label class="control-label">URL</label> <input class="form-control" type="text" id="URL" placeholder="Enter URL" value="{$config.Url}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Domain</label> <input class="form-control" type="text" id="Domain" placeholder="Enter Domain" value="{$config.Domain}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">APPID</label> <input class="form-control" type="text" id="APPID" placeholder="Enter APPID" value="{$config.APPID}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Bucket</label> <input class="form-control" type="text" id="Bucket" placeholder="Enter Bucket" value="{$config.Bucket}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">Region</label> <input class="form-control" type="text" id="Region" placeholder="Enter Region" value="{$config.Region}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">SecretId</label> <input class="form-control" type="text" id="SecretId" placeholder="Enter SecretId" value="{$config.SecretId}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">SecretKey</label> <input class="form-control" type="text" id="SecretKey" placeholder="Enter SecretKey" value="{$config.SecretKey}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">AllowPrefix</label> <input class="form-control" type="text" id="AllowPrefix" placeholder="Enter AllowPrefix" value="{$config.AllowPrefix}" />
+              </div>
+            </form>
+          </div>
+          <div class="tile-footer">
+            <button class="btn btn-primary btn-block" type="button" id=""><i class="fa fa-fw fa-lg fa-check-circle"></i>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main><!-- Essential javascripts for application to work-->
+  <script src="__STATIC__/APP/js/jquery-3.2.1.min.js"></script> 
+  <script src="__STATIC__/APP/js/popper.min.js"></script> 
+  <script src="__STATIC__/APP/js/bootstrap.min.js"></script> 
+  <script src="__STATIC__/APP/js/main.js"></script> <!-- The javascript plugin to display page loading on top-->
+   
+  <script src="__STATIC__/APP/js/plugins/pace.min.js"></script> <!-- Page specific javascripts-->
+  <!-- The javascript plugin to show message-->
+  <script src="__STATIC__/layer/layer.js"></script>
+  <script type="text/javascript">
+
+    $('form#qcloudcos').parent().next().children('button').on('click', function() {
+      layer.confirm('确定修改？', {
+        btn: ['确定','取消'],
+        skin: 'layui-layer-molv'
+      }, function(){
+        var modifyData = {
+          Url: $('#URL').val(),
+          Domain: $('#Domain').val(),
+          APPID: $('#APPID').val(),
+          Bucket: $('#Bucket').val(),
+          Region: $('#Region').val(),
+          SecretId: $('#SecretId').val(),
+          SecretKey: $('#SecretKey').val(),
+          AllowPrefix: $('#AllowPrefix').val(),
+        };
+        $.ajax({
+          url       : "{:url('index/manage/qcloudcos')}",
+          data      : modifyData,
+          type      : "POST",
+          dataType  : "JSON",
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("修改成功！", {icon: 6, time: 1000}, function() {
+                // window.location.reload();
+              });
+            } else {
+              layer.msg("修改失败！", {icon: 5, time: 1000}, function() {
+                // window.location.reload();
+              });
+            }
+          },
+          error     : function(rst) {
+            layer.msg("网络错误！", {icon: 5, time: 1000}, function() {
+            });
+          }
+        });
+      }, function(){
+        
+      });
+      
+    });
+
+  </script>
+</body>
+</html>

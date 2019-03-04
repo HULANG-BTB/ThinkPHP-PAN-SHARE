@@ -1,0 +1,45 @@
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user">
+      <img class="app-sidebar__user-avatar" src="__IMAGE__/avator/{$user.avator}" width="48px" height="48px" alt="User Image" />
+      <div>
+        <p class="app-sidebar__user-name">{$user.nickname}</p>
+        <p class="app-sidebar__user-designation">{$user.introduce}</p>
+      </div>
+    </div>
+    <ul class="app-menu">
+      <li>
+        <a class="app-menu__item{eq name='$controller' value='Index'} active{/eq}" href="{:url('index/index/index')}"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">控制台</span></a>
+      </li>
+{eq name="$user['admin']" value="1"}
+      <li class="treeview{eq name='$controller' value='Manage'} is-expanded{/eq}">
+        <a class="app-menu__item" href="#"  data-toggle="treeview"><i class="app-menu__icon fa fa-cogs"></i><span class="app-menu__label">网站管理</span><i class="treeview-indicator fa fa-angle-right"></i></a>
+        <ul class="treeview-menu">
+          <li>
+            <a class="treeview-item" href="{:url('index/Manage/config')}"><i class="icon fa fa-circle-o"></i> 网站配置</a>
+          </li>
+          <li>
+            <a class="treeview-item" href="{:url('index/Manage/file')}"><i class="icon fa fa-circle-o"></i> 文件审核</a>
+          </li>
+          <li>
+            <a class="treeview-item" href="{:url('index/Manage/user')}"><i class="icon fa fa-circle-o"></i> 用户审核</a>
+          </li>
+        </ul>
+
+
+        
+      </li>
+{/eq}
+      <li>
+        <a class="app-menu__item{eq name='$controller' value='User'} active{/eq}" href="{:url('index/user/index')}"><i class="app-menu__icon fa fa-drivers-license"></i><span class="app-menu__label">个人中心</span></a>
+      </li>
+      <li>
+        <a class="app-menu__item{eq name='$controller' value='File'} active{/eq}" href="{:url('index/file/index')}"><i class="app-menu__icon fa fa-folder-open"></i><span class="app-menu__label">我的文件</span></a>
+      </li>
+      <li>
+        <a class="app-menu__item{eq name='$controller' value='Share'} active{/eq}" href="{:url('index/share/index')}"><i class="app-menu__icon fa fa-share-alt"></i><span class="app-menu__label">我的分享</span></a>
+      </li>
+      <li>
+        <a class="app-menu__item" href="{:url('index/login/logout')}"><i class="app-menu__icon fa fa-sign-out"></i><span class="app-menu__label">退出登陆</span></a>
+      </li>
+    </ul>
+  </aside>

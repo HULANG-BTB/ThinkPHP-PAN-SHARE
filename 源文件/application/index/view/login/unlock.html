@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- bootstrap CSS-->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/bootstrap/css/bootstrap.min.css">
+    <!-- Main CSS-->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/main.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/font-awesome.min.css">
+    <title>Lockscreen - Vali Admin</title>
+  </head>
+  <body>
+    <section class="material-half-bg">
+      <div class="cover"></div>
+    </section>
+    <section class="lockscreen-content">
+      <div class="logo">
+        <h1>Vali</h1>
+      </div>
+      <div class="lock-box"><img class="rounded-circle user-image" src="__IMAGE__/avator/{$user.avator}" width="110px" height="110px" >
+        <h4 class="text-center user-name">{$user.nickname}</h4>
+        <p class="text-center text-muted">Account Locked</p>
+        <form class="unlock-form">
+          <div class="form-group">
+            <label class="control-label">PASSWORD</label>
+            <input class="form-control" type="password" id="password" placeholder="Password" autofocus>
+          </div>
+          <div class="form-group btn-container">
+            <button class="btn btn-primary btn-block" type="submit"><i class="fa fa-unlock fa-lg"></i>UNLOCK </button>
+          </div>
+        </form>
+        <p><a href="{:url('index/login/login')}">Not {$user.nickname} ? Login Here.</a></p>
+      </div>
+    </section>
+    <!-- Essential javascripts for application to work-->
+    <script src="__STATIC__/APP/js/jquery-3.2.1.min.js"></script>
+    <script src="__STATIC__/APP/js/popper.min.js"></script>
+    <script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+    <script src="__STATIC__/APP/js/main.js"></script>
+    <!-- The javascript plugin to display page loading on top-->
+    <script src="__STATIC__/APP/js/plugins/pace.min.js"></script>
+    <!-- The javascript plugin to show message-->
+    <script src="__STATIC__/layer/layer.js"></script>
+    <script type="text/javascript">
+      $('form.unlock-form button').on('click', function() {
+        var that = $(this);
+        that.attr("disabled", true);
+        var verifyData = {
+          'password': $('#password').val(),
+        };
+        
+        $.ajax({
+          url       : "{:url("index/login/unlockCheck")}",
+          type      : "POST",
+          data      : verifyData,
+          dataType  : "JSON",
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("验证成功！", {icon: 6}, function() {
+                window.location.href = rst.msg;
+              });
+            } else {
+              layer.msg("验证失败！" + rst.msg, {icon: 5}, function() {
+                that.removeAttr("disabled");
+              });
+            }
+          },
+          error     : function(rst) {
+            that.removeAttr("disabled");
+              layer.msg("验证错误！请重试。", {icon: 5}, function() {
+                that.removeAttr("disabled");
+              });
+          }
+        });
+
+        return false;
+      });
+
+    </script>
+  </body>
+</html>

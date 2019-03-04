@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Vali Admin - Free Bootstrap 4 Admin Template</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Main CSS-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/main.css" /><!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/font-awesome.min.css" />
+</head>
+<body class="app sidebar-mini rtl">
+  <!-- Navbar-->
+{include file="public/header"}
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+{include file="public/sidebar"}
+  <main class="app-content">
+    <div class="app-title">
+      <div>
+        <h1><i class="fa fa-user"></i> 个人中心</h1>
+      </div>
+      <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item">
+          <a href="#">个人中心</a>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="tile">
+          <h3 class="tile-title">基础信息</h3>
+          <div class="tile-body">
+            <form id="baseInfo" name="baseInfo">
+              <div class="form-group">
+                <label class="control-label">昵称</label> <input class="form-control" type="text" id="nickname" placeholder="Enter nickname" value="{$user.nickname}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">电话</label> <input class="form-control" type="text" id="phone" placeholder="Enter Phone number" value="{$user.phone}" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">邮件</label> <input class="form-control" type="text" id="email" placeholder="Enter email address" value="{$user.email}" />
+              </div>
+            </form>
+          </div>
+          <div class="tile-footer">
+            <button class="btn btn-primary btn-block" type="button" id=""><i class="fa fa-fw fa-lg fa-check-circle"></i>Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="tile">
+          <h3 class="tile-title">头像修改</h3>
+          <div class="tile-body">
+            <form id="avator" name="avator">
+              <div class="form-group"><label class="control-label">用户头像</label> <input class="form-control" type="file" /> <img src="__IMAGE__/avator/{$user.avator}" width="120px" height="120px" /></div>
+            </form>
+          </div>
+          <div class="tile-footer">
+            <button class="btn btn-primary" type="button"><i class="fa fa-fw fa-lg fa-check-circle"></i>上传修改</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="tile">
+          <h3 class="tile-title">密码修改</h3>
+          <div class="tile-body">
+            <form id="account" name="account">
+              <div class="form-group">
+                <label class="control-label">密码</label> <input class="form-control" id="password" type="password" placeholder="Enter old password" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">新密码</label> <input class="form-control" id="newpassword" type="password" placeholder="Enter new password" />
+              </div>
+              <div class="form-group">
+                <label class="control-label">确认密码</label> <input class="form-control" id="renewpassword" type="password" placeholder="Enter new password again" />
+              </div>
+            </form>
+          </div>
+          <div class="tile-footer">
+            <button class="btn btn-primary btn-block" type="button"><i class="fa fa-fw fa-lg fa-check-circle"></i>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main><!-- Essential javascripts for application to work-->
+  <script src="__STATIC__/APP/js/jquery-3.2.1.min.js"></script> 
+  <script src="__STATIC__/APP/js/popper.min.js"></script> 
+  <script src="__STATIC__/APP/js/bootstrap.min.js"></script> 
+  <script src="__STATIC__/APP/js/main.js"></script> <!-- The javascript plugin to display page loading on top-->
+   
+  <script src="__STATIC__/APP/js/plugins/pace.min.js"></script> <!-- Page specific javascripts-->
+  <!-- The javascript plugin to show message-->
+  <script src="__STATIC__/layer/layer.js"></script>
+  <script type="text/javascript">
+
+
+  //<![CDATA[
+
+
+    
+    $('form#baseInfo').parent().next().children('button').on('click', function() {
+      layer.confirm('确定修改？', {
+        btn: ['确定','取消'],
+        skin: 'layui-layer-molv'
+      }, function(){
+        var modifyData = {
+          nickname: $('#nickname').val(),
+          phone: $('#phone').val(),
+          email: $('#email').val(),
+        };
+        $.ajax({
+          url       : "{:url('index/user/modify')}",
+          data      : modifyData,
+          type      : "POST",
+          dataType  : "JSON",
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("修改成功！", {icon: 6, time: 1000}, function() {
+                window.location.reload();
+              });
+            } else {
+              layer.msg("修改失败！", {icon: 5, time: 1000}, function() {
+                window.location.reload();
+              });
+            }
+          },
+          error     : function(rst) {
+            layer.msg("网络错误！", {icon: 5, time: 1000}, function() {
+                window.location.reload();
+            });
+          }
+        });
+      }, function(){
+        
+      });
+      
+    });
+
+    $('form#avator').parent().next().children('button').on('click', function() {
+      if ($('#avator input[type="file"]').prop('files')[0].size/1024 > 2048) {
+        layer.msg("上传错误!图片大小不能超过2M.", {icon: 5, time: 1000}, function() {
+                window.location.reload();
+            });
+        return false;
+      }
+
+      layer.confirm('确定修改？', {
+        btn: ['确定','取消'],
+        skin: 'layui-layer-molv'
+      }, function(){
+        var avatorData = new FormData();
+        avatorData.append('avator', $('#avator input[type="file"]').prop('files')[0]);
+        $.ajax({
+          url       : "{:url('index/user/avator')}",
+          data      : avatorData,
+          type      : "POST",
+          dataType  : "JSON",
+          processData:false,
+          contentType:false,
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("头像修改成功！", {icon: 6, time: 1000}, function() {
+                window.location.reload();
+              });
+            } else {
+              layer.msg("头像修改失败！" + rst.msg, {icon: 5, time: 1000}, function() {
+                window.location.reload();
+              });
+            }
+          },
+          error     : function(rst) {
+            layer.msg("网络错误！", {icon: 5, time: 1000}, function() {
+                window.location.reload();
+            });
+          }
+        });
+      }, function(){
+        
+      });
+    });
+
+    $('form#account').parent().next().children('button').on('click', function() {
+
+      layer.confirm('确定修改？', {
+        btn: ['确定','取消'],
+        skin: 'layui-layer-molv'
+      }, function(){
+        var modifyData = {
+          password: $('#password').val(),
+          newpassword: $('#newpassword').val(),
+          renewpassword: $('#renewpassword').val(),
+        };
+        $.ajax({
+          url       : "{:url('index/user/password')}",
+          data      : modifyData,
+          type      : "POST",
+          dataType  : "JSON",
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("密码修改成功！", {icon: 6, time: 1000}, function() {
+                window.location.reload();
+              });
+            } else {
+              layer.msg("密码修改失败！" + rst.msg, {icon: 5, time: 1000}, function() {
+                window.location.reload();
+              });
+            }
+          },
+          error     : function(rst) {
+            layer.msg("网络错误！", {icon: 5, time: 1000}, function() {
+                window.location.reload();
+            });
+          }
+        });
+      }, function(){
+        
+      });
+    });
+
+    $('#avator input[type="file"]').on('change', function() {
+      var url = null ;
+      if (window.createObjectURL!=undefined) { // basic
+        url = window.createObjectURL($(this).prop('files')[0]) ;
+      } else if (window.URL!=undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL($(this).prop('files')[0]) ;
+      } else if (window.webkitURL!=undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL($(this).prop('files')[0]) ;
+      }
+      $(this).next().attr('src', url);
+    });
+
+  //]]>
+  </script>
+</body>
+</html>

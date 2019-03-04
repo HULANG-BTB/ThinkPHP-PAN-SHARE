@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Vali Admin - Free Bootstrap 4 Admin Template</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- bootstrap CSS-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/bootstrap/css/bootstrap.min.css" /><!-- Main CSS-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/main.css" /><!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="__STATIC__/layui/css/layui.css"  media="all">
+</head>
+<body class="app sidebar-mini rtl">
+  <!-- Navbar-->
+{include file="public/header"}
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+{include file="public/sidebar"}
+  <main class="app-content">
+    <div class="app-title">
+      <div>
+        <h1><i class="fa fa-folder"></i> 网站管理</h1>
+      </div>
+      <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item">
+          <a href="#">用户审核</a>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tile">
+          <div class="tile-title">
+            用户审核
+          </div>
+          <div class="tile-body">
+            <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="text/html" id="toolBar">
+    <div class="layui-btn-container">
+      <button class="layui-btn layui-btn-sm" lay-event="delSelect">删除选中</button>
+      <button class="layui-btn layui-btn-sm" lay-event="passSelect">通过选中</button>
+      <button class="layui-btn layui-btn-sm" lay-event="Refresh">刷新</button>
+    </div>
+  </script>
+  <script type="text/html" id="lineToolBar">
+    {{#
+      if (d.status == 0) {
+        return '<a class="layui-btn layui-btn-warning layui-btn-xs" lay-event="pass">通过</a>';
+      } else {
+        return '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+      }
+    }}
+    
+  </script>
+  <!-- Essential javascripts for application to work-->
+  <script src="__STATIC__/APP/js/jquery-3.2.1.min.js"></script> 
+  <script src="__STATIC__/APP/js/popper.min.js"></script> 
+  <script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script> 
+  <script src="__STATIC__/APP/js/main.js"></script> <!-- The javascript plugin to display page loading on top-->
+   
+  <script src="__STATIC__/APP/js/plugins/pace.min.js"></script> <!-- Page specific javascripts-->
+  <!-- Layui plugin-->
+  <script src="__STATIC__/layui/layui.js"></script>
+
+  <script type="text/javascript">
+    layui.use('table', function() {
+      var table = layui.table;
+      table.render({
+        elem: "#fileList",
+        url: "{:url('index/manage/userlist')}",
+        response: {
+          statusName: 'status', //规定数据状态的字段名称，默认：code
+          statusCode: 1, //规定成功的状态码，默认：0
+          msgName: 'msg', //规定状态信息的字段名称，默认：msg
+          countName: 'count', //规定数据总数的字段名称，默认：count
+          dataName: 'data', //规定数据列表的字段名称，默认：data
+        },
+        toolbar: "#toolBar",
+        where: {path: $('#path').val()},
+        height: 'full-350',
+        page: true,
+        id: "idFileList",
+        title: "文件管理",
+        cols: [
+          [
+            {type: "checkbox", fixed: "left", field: "id"},
+            {field: "username", title: "用户名", fixed: "left", sort: true},
+            {field: "nickname", title: "昵称"},
+            {field: "phone", title: "电话", sort: true},
+            {field: "email", title: "邮箱", sort: true},
+            {field: "ctime", title: "注册时间"},
+            {fixed: "right", title: "操作", toolbar: "#lineToolBar"}
+          ]
+        ],
+      });
+
+      table.on('toolbar(fileList)', function(obj){
+        var checkStatus = table.checkStatus(obj.config.id);
+        switch(obj.event){
+          case 'delSelect':
+            var data = JSON.stringify(checkStatus.data);
+            layer.confirm('确定删除？', {
+              btn: ['确定','取消'],
+              skin: 'layui-layer-molv'
+            }, function(){
+              $.ajax({
+                url       : "{:url('index/manage/delSelectUser')}",
+                data      : {item: data},
+                type      : "POST",
+                dataType  : "JSON",
+                success   : function(rst) {
+                  if (rst.status) {
+                    var msg = "删除成功！";
+                    if ( rst.status != rst.count ) {
+                      msg = "部分删除成功！";
+                    }
+                    layer.msg(msg, {icon: 6, time: 1000}, function() {
+                      table.reload("idFileList", { where: {path: $('#path').val()} } );
+                    });
+                  } else {
+                    layer.msg("删除失败！", {icon: 5, time: 1000});
+                  }
+                },
+                error     : function(rst) {
+                  layer.msg("网络错误！", {icon: 5, time: 1000});
+                }
+              });
+            }, function(){
+              
+            });
+          break;
+          case 'passSelect':
+            var data = JSON.stringify(checkStatus.data);
+            layer.confirm('确定通过？', {
+              btn: ['确定','取消'],
+              skin: 'layui-layer-molv'
+            }, function() {
+              $.ajax({
+                url       : "{:url('index/manage/passSelectUser')}",
+                data      : {item: data},
+                type      : "POST",
+                dataType  : "JSON",
+                success   : function(rst) {
+                  if (rst.status) {
+                    var msg = "通过成功！";
+                    if ( rst.status != rst.count ) {
+                      msg = "部分通过成功！";
+                    }
+                    layer.msg(msg, {icon: 6, time: 1000}, function() {
+                      table.reload("idFileList", { where: {path: $('#path').val()} } );
+                    });
+                  } else {
+                    layer.msg("通过失败！", {icon: 5, time: 1000});
+                  }
+                },
+                error     : function(rst) {
+                  layer.msg("网络错误！", {icon: 5, time: 1000});
+                }
+              });
+            }, function(){
+              
+            });
+          break;
+          case 'Refresh':
+            table.reload("idFileList", {});
+          break;
+        };
+      });
+
+      table.on('tool(fileList)', function(obj) {
+        var data = obj.data;
+        switch(obj.event) {
+          case 'pass':
+            layer.confirm('确定通过？', {
+              btn: ['确定','取消'],
+              skin: 'layui-layer-molv'
+            }, function(){
+              $.ajax({
+                url       : "{:url('index/manage/passUser')}",
+                data      : data,
+                type      : "POST",
+                dataType  : "JSON",
+                success   : function(rst) {
+                  if (rst.status) {
+                    var msg = "通过成功！";
+                    layer.msg(msg, {icon: 6, time: 1000}, function() {
+                      table.reload("idFileList", { where: {path: $('#path').val()} } );
+                    });
+                  } else {
+                    layer.msg("通过失败！" + rst.msg, {icon: 5, time: 1000});
+                  }
+                },
+                error     : function(rst) {
+                  layer.msg("网络错误！", {icon: 5, time: 1000});
+                }
+              });
+            }, function(){
+              
+            });
+          break;
+          case 'del':
+            layer.confirm('确定删除？', {
+              btn: ['确定','取消'],
+              skin: 'layui-layer-molv'
+            }, function(){
+              $.ajax({
+                url       : "{:url('index/manage/delUser')}",
+                data      : data,
+                type      : "POST",
+                dataType  : "JSON",
+                success   : function(rst) {
+                  if (rst.status) {
+                    var msg = "通过成功！";
+                    layer.msg(msg, {icon: 6, time: 1000}, function() {
+                      table.reload("idFileList", { where: {path: $('#path').val()} } );
+                    });
+                  } else {
+                    layer.msg("通过失败！" + rst.msg, {icon: 5, time: 1000});
+                  }
+                },
+                error     : function(rst) {
+                  layer.msg("网络错误！", {icon: 5, time: 1000});
+                }
+              });
+            }, function(){
+              
+            });
+          break;
+        }
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>

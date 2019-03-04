@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- bootstrap CSS-->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/bootstrap/css/bootstrap.min.css">
+    <!-- Main CSS-->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/main.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css" href="__STATIC__/APP/css/font-awesome.min.css">
+    <title>Login - {$title}</title>
+  </head>
+  <body>
+    <section class="material-half-bg">
+      <div class="cover"></div>
+    </section>
+    <section class="login-content">
+      <div class="logo">
+        <h1>Pan Share</h1>
+      </div>
+      <div class="login-box">
+        <form class="login-form">
+          <h3 class="login-head"><i class="fa fa-lg fa-fw fa-user"></i>SIGN IN</h3>
+          <div class="form-group">
+            <label class="control-label">USERNAME</label>
+            <input class="form-control" type="text" id="username" placeholder="Username" autofocus>
+          </div>
+          <div class="form-group">
+            <label class="control-label">PASSWORD</label>
+            <input class="form-control" type="password" id="password" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <div class="utility">
+              <div class="animated-checkbox">
+                <label>
+                  <input type="checkbox" id="remember"><span class="label-text">Stay Signed in</span>
+                </label>
+              </div>
+              <p class="semibold-text mb-2"><a href="#" data-toggle="flip" data-target="forget">Forgot Password ?</a></p>
+            </div>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-block" type="submit"><i class="fa fa-sign-in fa-lg fa-fw"></i>SIGN IN</button>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-block" data-toggle="flip" data-target="register"><i class="fa fa-angle-left fa-fw"></i>SIGN UP</button>
+          </div> 
+        </form>
+        <form class="forget-form">
+          <h3 class="login-head"><i class="fa fa-lg fa-fw fa-lock"></i>Forgot Password ?</h3>
+          <div class="form-group">
+            <label class="control-label">EMAIL</label>
+            <input class="form-control" type="text" id="email" placeholder="Email">
+          </div>
+          <div class="form-group btn-container">
+            <button class="btn btn-primary btn-block"><i class="fa fa-unlock fa-lg fa-fw"></i>RESET</button>
+          </div>
+          <div class="form-group mt-3">
+            <p class="semibold-text mb-0"><a href="#" data-toggle="flip" data-target="login"><i class="fa fa-angle-left fa-fw"></i> Back to Login</a></p>
+          </div>
+        </form>
+
+        <form class="register-form">
+          <h3 class="login-head"><i class="fa fa-lg fa-fw fa-lock"></i>Sign Up</h3>
+          <div class="form-group">
+            <label class="control-label">UserName</label>
+            <input class="form-control" type="text" id="rusername" lay-verify="required" placeholder="USERNAME">
+          </div>
+          <div class="form-group">
+            <label class="control-label">NickName</label>
+            <input class="form-control" type="text" id="rnickname" lay-verify="required" placeholder="NICKNAME">
+          </div>
+          <div class="form-group">
+            <label class="control-label">Email</label>
+            <input class="form-control" type="text" id="remail" lay-verify="required" placeholder="NICKNAME">
+          </div>
+          <div class="form-group">
+            <label class="control-label">PassWord</label>
+            <input class="form-control" type="password" id="rpassword" lay-verify="required" placeholder="PASSWORD">
+          </div>
+          <div class="form-group">
+            <label class="control-label">RePassWord</label>
+            <input class="form-control" type="password" id="rrepassword" lay-verify="required" placeholder="PASSWORD AGAIN">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-block" type="submit"><i class="fa fa-unlock fa-lg fa-fw"></i>SIGN UP</button>
+          </div>
+          <div class="form-group mt-3">
+            <p class="semibold-text mb-0"><a href="#" data-toggle="flip" data-target="login"><i class="fa fa-angle-left fa-fw"></i> Back to Login</a></p>
+          </div>
+        </form>
+      </div>
+    </section>
+    <!-- Essential javascripts for application to work-->
+    <script src="__STATIC__/APP/js/jquery-3.2.1.min.js"></script>
+    <script src="__STATIC__/APP/js/popper.min.js"></script>
+    <script src="__STATIC__/bootstrap/js/bootstrap.min.js"></script>
+    <script src="__STATIC__/APP/js/main.js"></script>
+    <!-- The javascript plugin to display page loading on top-->
+    <script src="__STATIC__/APP/js/plugins/pace.min.js"></script>
+    <!-- The javascript plugin to show message-->
+    <script src="__STATIC__/layer/layer.js"></script>
+    <script type="text/javascript">
+      // Login Page Flipbox control
+      $('.login-content [data-toggle="flip"]').click(function() {
+
+        if ( $(this).attr('data-target') == 'forget' ) {
+          $('.login-box').toggleClass('forget');
+        }
+        if ( $(this).attr('data-target') == 'login' ) {
+          $('.login-box').removeClass('forget').removeClass('register');
+        }
+        if ( $(this).attr('data-target') == 'register' ) {
+          $('.login-box').toggleClass('register');
+        }
+      	return false;
+      });
+
+      $('form.login-form button[type="submit"]').on('click', function() {
+        var that = $(this);
+        that.attr("disabled", true);
+        var verifyData = {
+          'username': $('#username').val(),
+          'password': $('#password').val(),
+          'remember': $('#remember').prop('checked'),
+        };
+        
+        $.ajax({
+          url       : "{:url("index/login/loginCheck")}",
+          type      : "POST",
+          data      : verifyData,
+          dataType  : "JSON",
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("登陆成功！", {icon: 6, time: 1000}, function() {
+                window.location.href = rst.msg;
+              });
+            } else {
+              layer.msg("登陆失败！" + rst.msg, {icon: 5, time: 1000}, function() {
+                that.removeAttr("disabled");
+              });
+            }
+          },
+          error     : function(rst) {
+            that.removeAttr("disabled");
+              layer.msg("登陆错误！请重试。", {icon: 5, time: 1000}, function() {
+                that.removeAttr("disabled");
+              });
+          }
+        });
+
+        return false;
+      });
+
+      $('form.forget-form button[type="submit"]').on('click', function() {
+        var that = $(this);
+        that.attr("disabled", true);
+        var verifyData = {
+          'email': $('#email').val(),
+        };
+        
+        $.ajax({
+          url       : "{:url("index/login/resetUser")}",
+          type      : "POST",
+          data      : verifyData,
+          dataType  : "JSON",
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("提交成功！如果用户邮箱存在，将会发送邮件到你的邮箱。" , {icon: 6}, function() {
+                that.removeAttr("disabled");
+                $('.login-box').toggleClass('flipped');
+              });
+            } else {
+              layer.msg("提交失败！" + rst.msg , {icon: 5, time: 1000}, function() {
+                that.removeAttr("disabled");
+              });
+            }
+          },
+          error     : function(rst) {
+            that.removeAttr("disabled");
+              layer.msg("验证错误！请重试。", {icon: 5, time: 1000}, function() {
+                that.removeAttr("disabled");
+              });
+          }
+        });
+        return false;
+      });
+
+      $('form.register-form button[type="submit"]').on('click', function() {
+        var that = $(this);
+        that.attr("disabled", true);
+        var verifyData = {
+          'username': $('#rusername').val(),
+          'nickname': $('#rnickname').val(),
+          'email': $('#remail').val(),
+          'password': $('#rpassword').val(),
+          'repassword': $('#rrepassword').val(),
+        };
+        
+        $.ajax({
+          url       : "{:url("index/login/register")}",
+          type      : "POST",
+          data      : verifyData,
+          dataType  : "JSON",
+          success   : function(rst) {
+            if (rst.status) {
+              layer.msg("注册成功！请等待管理员审核。" , {icon: 6, time: 3000}, function() {
+                that.removeAttr("disabled");
+                $('.login-box').toggleClass('flipped');
+              });
+            } else {
+              layer.msg("注册失败！" + rst.msg , {icon: 5, time: 3000}, function() {
+                that.removeAttr("disabled");
+              });
+            }
+          },
+          error     : function(rst) {
+            that.removeAttr("disabled");
+              layer.msg("网络错误！请重试。", {icon: 5, time: 2000}, function() {
+                that.removeAttr("disabled");
+              });
+          }
+        });
+        return false;
+      });
+    </script>
+  </body>
+</html>
